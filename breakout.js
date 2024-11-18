@@ -235,7 +235,7 @@ function winnerMessage() {
     context.clearRect(0, 0, boardWidth, boardHeight);
     context.fillStyle = 'white';
     context.font = '40px Arial';
-    context.fillText('Čestitamo, pobijedili ste!', boardWidth / 2 - context.measureText('Čestitamo, pobijedili ste!').width / 2, boardHeight / 2)
+    context.fillText('ČESTITAMO, POBIJEDILI STE!', boardWidth / 2 - context.measureText('ČESTITAMO, POBIJEDILI STE!').width / 2, boardHeight / 2)
     document.removeEventListener('keydown', movePaddle);
 }
 
