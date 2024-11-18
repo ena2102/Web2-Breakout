@@ -60,8 +60,10 @@ window.onload = function() {
     createBricks();
 }
 
+//funkcija za ažuriranje ploče
 function update() {
 
+    //ako je igra gotova, ne ažuriraj ploču
     if(gameOverVar) {
         return;
     }
@@ -82,22 +84,22 @@ function update() {
     ball.y = ball.y + ball.dy;
     context.fillRect(ball.x, ball.y, ball.radius, ball.radius);
 
-    //odbijanje od zidova iili palice
+    //odbijanje od zidova ili palice
     if (ball.x + ball.radius > boardWidth || ball.x < 0) {
         //ako je loptica došla do lijeve ili desne strane
-        ball.dx = -ball.dx;
+        ball.dx = -ball.dx; //promjena smjera loptice
 
     } else if (ball.y < 0) {
         //ako je loptica došla do vrha
-        ball.dy = -ball.dy;
+        ball.dy = -ball.dy; //promjena smjera loptice
 
     } else if (topCollision(ball, paddle) || bottomCollision(ball, paddle)) {
         //ako je loptica došla do palice
-        ball.dy = -ball.dy;
+        ball.dy = -ball.dy; //promjena smjera loptice
 
     } else if (leftCollision(ball, paddle) || rightCollision(ball, paddle)) {
         //ako je loptica došla do palice
-        ball.dx = -ball.dx;
+        ball.dx = -ball.dx; //promjena smjera loptice
 
     } else if (ball.y + ball.radius > boardHeight) {
         //ako je loptica došla do dna
@@ -111,18 +113,22 @@ function update() {
     for (let i = 0; i < bricks.length; i++) {
         let brick = bricks[i];
         if(!brick.broken) {
+            //ako je loptica došla do cigle s gornje ili donje strane
             if(topCollision(ball, brick) || bottomCollision(ball, brick)) {
                 brick.broken = true;
-                ball.dy = -ball.dy;
+                ball.dy = -ball.dy; //promjena smjera loptice
                 score++;
                 bricksCount--;
+                //ako je postignut najbolji rezultat
                 if (score > highScore) {
                     highScore = score;
                     localStorage.setItem('highScore', highScore);
                 }
+                //ako su sve cigle razbijene
                 if (bricksCount === 0) {
                     winnerMessage();
                 }
+            //ako je loptica došla do cigle s lijeve ili desne strane
             } else if (leftCollision(ball, brick) || rightCollision(ball, brick)) {
                 brick.broken = true;
                 ball.dx = -ball.dx;
@@ -143,7 +149,6 @@ function update() {
     //praćenje bodova
     drawScores();
 
-
     requestAnimationFrame(update);
 }
 
@@ -160,13 +165,14 @@ function movePaddle(e) {
     }
 }
 
+//funkcija za kreiranje cigli
 function createBricks() {
     bricks = [];
     for (let i = 0; i < numOfCols; i++) {
         for (let j = 0; j < numOfRows; j++) {
             let brick = {
-                x: i * (brickWidth + 10) + 30,
-                y: j * (brickHeight + 10) + 30,
+                x: i * (brickWidth + 10) + 30, //udaljenost između cigli horizontalno
+                y: j * (brickHeight + 10) + 30, //udaljenost između cigli okomito
                 width: brickWidth,
                 height: brickHeight,
                 broken: false
@@ -177,12 +183,15 @@ function createBricks() {
     bricksCount = bricks.length;
 }
 
+//funkcija za detekciju kolizija
 function detectCollisions(a, b) {
-    return a.x < b.x + b.width &&
-        a.x + a.radius > b.x &&
-        a.y < b.y + b.height &&
-        a.y + a.radius > b.y;
+    return a.x < b.x + b.width && //lijeva strana loptice je manja od desne strane cigle
+        a.x + a.radius > b.x && //desna strana loptice je veća od lijeve strane cigle
+        a.y < b.y + b.height && //gornja strana loptice je manja od donje strane cigle
+        a.y + a.radius > b.y; //donja strana loptice je veća od gornje strane cigle
 }
+
+//funkcije za detekciju kolizija s gornjom, donjom, lijevom i desnom stranom cigle
 
 function topCollision(ball, brick) {
     return detectCollisions(ball, brick) && (ball.y + ball.radius) >= brick.y;
@@ -200,6 +209,7 @@ function rightCollision(ball, brick) {
     return detectCollisions(ball, brick) && (brick.x + brick.width) >= ball.x;
 }
 
+//funkcija za crtanje bodova
 function drawScores() {
     context.fillStyle = 'white';
     context.font = '20px Arial';
@@ -208,6 +218,7 @@ function drawScores() {
     context.fillText('Maksimalan broj bodova: ' + maxScore, boardWidth - 260, 20);
 }
 
+//funkcija za kraj igre
 function gameOver() {
     gameOverVar = true;
     drawScores();
@@ -218,6 +229,7 @@ function gameOver() {
     document.removeEventListener('keydown', movePaddle);
 }
 
+//funkcija za poruku o pobjedi
 function winnerMessage() {
     gameOverVar = true;
     context.clearRect(0, 0, boardWidth, boardHeight);
